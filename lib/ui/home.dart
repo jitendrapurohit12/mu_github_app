@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mu_github_app/models/repo.dart';
 import 'package:mu_github_app/models/repo_list.dart';
 import 'package:mu_github_app/service/repo_service.dart';
+import 'package:mu_github_app/ui/common/repo_list_ui.dart';
+import 'package:mu_github_app/ui/repo_ui.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 class Home extends StatefulWidget {
@@ -70,7 +72,7 @@ class _HomeState extends State<Home> {
                 var state = _formKey.currentState;
                 if (state.validate()) {
                   state.save();
-                  model.setState((model)=>model.fetchRepos(_controller.text));
+                  model.setState((model) => model.fetchRepos(_controller.text));
                 }
               },
             )
@@ -83,16 +85,23 @@ class _HomeState extends State<Home> {
   Widget dataUI(List<Repo> list) {
     return list.isEmpty
         ? Column(
-          children: <Widget>[
-            Center(
+            children: <Widget>[
+              Center(
                 child: Text('No Repo found! Please enter different username.'),
               ),
-          ],
-        )
+            ],
+          )
         : ListView.builder(
             itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(list[index].name),
+              return RepoListUI(
+                title: list[index].name,
+                callback: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => RepoUI(
+                              username: _controller.text.trim(),
+                              title: list[index].name,
+                            ))),
               );
             },
             itemCount: list.length,
@@ -103,9 +112,11 @@ class _HomeState extends State<Home> {
     return Column(
       children: <Widget>[
         initialUI(model),
-        SizedBox(height: 16,),
+        SizedBox(
+          height: 16,
+        ),
         Center(
-          child: Text(f.message),
+          child: Text(f?.message ?? 'Something went wrong'),
         ),
       ],
     );

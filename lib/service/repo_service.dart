@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:mu_github_app/models/commit.dart';
 import 'package:mu_github_app/models/repo.dart';
 
 class ApiServices {
@@ -17,9 +18,10 @@ class ApiServices {
   Future<List<Repo>> getReposForUser(String username) async {
     List<Repo> repoList = List();
     Response repoResponse;
-    Response userResponse =
-        await _dio.get(getUserUrl(username));
-    if (userResponse?.data != null) {
+    Response userResponse = await _dio
+        .get(getUserUrl(username))
+        .catchError((e) => throw Failure(message: 'User Not Found'));
+    if (userResponse != null && userResponse.data != null) {
       repoResponse = await _dio.get(getUserRepos(username));
 
       if (repoResponse != null) {
@@ -34,6 +36,21 @@ class ApiServices {
       throw Failure(message: 'No user found');
 
     return repoList;
+  }
+
+  Future<List<Commit>> getCommits(String username, String repoName)async{
+    List<Commit> commitList = List();
+    var response = await _dio.get(getRepoCommits(username, repoName));
+
+    if(response != null && response.data != null){
+      List<dynamic> list = response.data;
+
+      list.forEach((map){
+        dynamic com = map['commit'];
+        commitList.add(Commit.fromJson(com));
+      });
+    }
+    return commitList;
   }
 }
 

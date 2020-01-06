@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mu_github_app/models/commit_list.dart';
 import 'package:mu_github_app/models/repo.dart';
 import 'package:mu_github_app/ui/home.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
       home: Injector(
         inject: [
           Inject<RepoList>(() => RepoList()),
+          Inject<CommitList>(() => CommitList()),
         ],
         builder: (context) => Home(),
       ),
